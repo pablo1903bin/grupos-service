@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: grupos-service
+  datasource:
+    url: jdbc:postgresql://192.168.100.23:5432/my_database
+    username: admin
+    password: super
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 5
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+
+server:
+  servlet:
+    context-path: /grupos-service
+  port: 0
+
+eureka:
+  instance:
+    instance-id: "${spring.application.name}:${random.value}"
+  client:
+      service-url:
+        defaultZone: http://localhost:8761/eureka/
