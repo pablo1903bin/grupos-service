@@ -24,7 +24,9 @@ spring:
 
 logging:
   level:
+
     org:
+      springframework.cloud.gateway: DEBUG
       hibernate:
         SQL: DEBUG # Muestra las consultas SQL generadas por Hibernate en la consola
         type:
