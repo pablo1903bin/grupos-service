@@ -1,32 +1,40 @@
+server:
+  servlet:
+    context-path: /grupos-service
+  port: 8081
+
 spring:
   application:
-    name: grupos-service
+    name: grupos-service 
+
+  profiles:
+    default: dev 
+
+  config:
+    import: ${SPRING_CONFIG_IMPORT} # Importa la configuración externa desde config-server
+    #import: optional:configserver:http://localhost:7777/
+
   datasource:
-    url: jdbc:postgresql://192.168.100.23:5432/my_database
-    username: admin
-    password: super
+    username: ${db.username} 
     hikari:
-      connection-timeout: 20000
-      maximum-pool-size: 5
+      maximum-pool-size: 5 
+      connection-timeout: 20000 
+    url: ${db.url} 
+    password: ${db.password} 
 
 logging:
   level:
     org:
       hibernate:
-        SQL: DEBUG
+        SQL: DEBUG # Muestra las consultas SQL generadas por Hibernate en la consola
         type:
           descriptor:
             sql:
-              BasicBinder: TRACE
-
-server:
-  servlet:
-    context-path: /grupos-service
-  port: 0
+              BasicBinder: TRACE # Muestra también los valores que se "bindean" (asignan) a las consultas SQL
 
 eureka:
   instance:
-    instance-id: "${spring.application.name}:${random.value}"
+    instance-id: "${spring.application.name}:${random.value}" # ID único para registrar esta instancia en Eureka (evita duplicados)
   client:
-      service-url:
-        defaultZone: http://localhost:8761/eureka/
+    service-url:   
+      defaultZone: ${eureka.registry-server}
