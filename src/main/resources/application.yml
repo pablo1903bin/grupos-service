@@ -11,8 +11,9 @@ spring:
     default: dev 
 
   config:
-    import: ${SPRING_CONFIG_IMPORT} # Importa la configuración externa desde config-server
+    #import: ${SPRING_CONFIG_IMPORT} # Importa la configuración externa desde config-server
     #import: optional:configserver:http://localhost:7777/
+    import: optional:configserver:http://192.168.100.23:7777/
 
   datasource:
     username: ${db.username} 
@@ -39,4 +40,11 @@ eureka:
     instance-id: "${spring.application.name}:${random.value}" # ID único para registrar esta instancia en Eureka (evita duplicados)
   client:
     service-url:   
-      defaultZone: ${eureka.registry-server}
+      defaultZone: http://localhost:8761/eureka/
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v1/api-grupos
+
