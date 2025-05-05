@@ -1,49 +1,27 @@
 package com.tesoramobil.grupos.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
-import java.util.List;
 
-// Anotación para que esta clase sea un controlador REST
+import com.tesoramobil.grupos.dtos.GruposPorRolResponseDto;
+import com.tesoramobil.grupos.services.GrupoServices;
+
+import io.swagger.v3.oas.annotations.Operation;
+
+
 @RestController
-@RequestMapping("/api/grupos") // Ruta base
+@RequestMapping("/api/grupos") 
 public class GruposController {
 
-    // Lista en memoria para almacenar grupos
-    private List<String> grupos = new ArrayList<>();
 
-    // Crear un nuevo grupo
-    @PostMapping("/crear")
-    public String crearGrupo(@RequestBody String nombreGrupo) {
-        grupos.add(nombreGrupo);
-        return "Grupo creado: " + nombreGrupo;
-    }
+	@Autowired
+	GrupoServices grupoServices;
+	
+	@Operation(summary = "Listar grupos por rol", description = "Devuelve los grupos en los que el usuario está registrado, agrupados por el rol que tiene en cada uno (ADMINISTRADOR, TESORERO, INVITADO).")
+	@GetMapping("/grupos-por-rol/{usuarioId}")
+	public GruposPorRolResponseDto listarGruposPorRol(@PathVariable Long usuarioId) {
+		return grupoServices.listarGruposPorRol(usuarioId);
+	}
 
-    // Obtener todos los grupos
-    @GetMapping("/listar")
-    public List<String> listarGrupos() {
-        return grupos;
-    }
-
-    // Actualizar un grupo por índice
-    @PutMapping("/actualizar/{indice}")
-    public String actualizarGrupo(@PathVariable int indice, @RequestBody String nuevoNombre) {
-        if (indice >= 0 && indice < grupos.size()) {
-            grupos.set(indice, nuevoNombre);
-            return "Grupo actualizado en posición " + indice + ": " + nuevoNombre;
-        } else {
-            return "Índice inválido";
-        }
-    }
-
-    // Eliminar un grupo por índice
-    @DeleteMapping("/eliminar/{indice}")
-    public String eliminarGrupo(@PathVariable int indice) {
-        if (indice >= 0 && indice < grupos.size()) {
-            String eliminado = grupos.remove(indice);
-            return "Grupo eliminado: " + eliminado;
-        } else {
-            return "Índice inválido";
-        }
-    }
+	
 }
