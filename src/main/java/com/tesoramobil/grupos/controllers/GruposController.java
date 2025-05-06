@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 
 
 @RestController
-@RequestMapping("/api/grupos") 
+@RequestMapping("/grupos") 
 public class GruposController {
 
 
