@@ -23,27 +23,31 @@ spring:
     url: ${db.url} 
     password: ${db.password} 
 
+
   cloud:
     stream:
-      # Definición de los binders disponibles. Un binder es el puente entre tu app y el broker (Kafka).
+      # 🔌 Definición del binder (el "puente" entre Spring y Kafka)
       binders:
         kafka:
-          type: kafka  # Indica que este binder es para Kafka
+          type: kafka  # Indica que el binder será Kafka
           environment:
             spring:
               kafka:
-                bootstrap-servers: kafka:9093  # Dirección de tu servidor Kafka
+                bootstrap-servers: 192.168.100.48:9093  # Dirección IP y puerto del broker Kafka
 
-      # Aquí defines los canales lógicos (bindings) que tu app usará para enviar o recibir mensajes
+      # 🧭 Definición de los canales lógicos de entrada y salida
       bindings:
         output:
-          destination: mi-topic  # Topic real en Kafka al que se enviarán los mensajes
-          binder: kafka          # Usa el binder llamado "kafka" definido arriba
+          destination: mi-topic  # Topic de Kafka al que se enviarán los mensajes
+          binder: kafka          # Usa el binder llamado "kafka"
+          content-type: application/json  # Tipo de datos a enviar (recomendado para compatibilidad)
 
         input:
-          destination: mi-topic  # Topic real en Kafka del que se recibirán los mensajes
-          group: grupoA          # Grupo de consumidores (sirve para balancear carga y persistencia de offset)
-          binder: kafka          # Usa también el binder de Kafka
+          destination: mi-topic  # Topic desde el que se leerán los mensajes
+          group: grupoA          # Grupo de consumidores (permite recibir solo una vez por grupo)
+          binder: kafka
+          content-type: application/json  # Tipo de datos esperados
+       # Usa también el binder de Kafka
 
 
 logging:

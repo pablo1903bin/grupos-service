@@ -17,6 +17,7 @@ import com.tesoramobil.grupos.entities.MiembroGrupoEntity;
 import com.tesoramobil.grupos.entities.UserEntity;
 import com.tesoramobil.grupos.repositories.MiembroGrupoRepository;
 import com.tesoramobil.grupos.services.GrupoServices;
+import com.tesoramobil.grupos.streams.GruposPublisher;
 
 
 @Service
@@ -25,6 +26,8 @@ public class GrupoServicesImpl implements GrupoServices{
 	@Autowired
 	private MiembroGrupoRepository miembroGrupoRepository;
 	
+	@Autowired
+	private GruposPublisher publisher;
 
 	@Override
 	public GrupoEntity crearGrupo(CrearGrupoRequestDto request, UserEntity usuarioAutenticado) {
@@ -54,6 +57,10 @@ public class GrupoServicesImpl implements GrupoServices{
 	 */
 	@Override
 	public GruposPorRolResponseDto listarGruposPorRol(Long usuarioId) {
+
+	    // Envía el mensaje a Kafka
+		publisher.publicarMensaje("Consultando grupos para el usuario: " + usuarioId);
+
 	    List<MiembroGrupoEntity> membresias = miembroGrupoRepository.findByUsuario_Id(usuarioId);
 
 	    GruposPorRolResponseDto respuesta = new GruposPorRolResponseDto();
