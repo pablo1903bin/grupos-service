@@ -1,6 +1,9 @@
 package com.tesoramobil.grupos.controllers.servicesImpl;
 
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.tesoramobil.grupos.dtos.CrearGrupoRequestDto;
 import com.tesoramobil.grupos.dtos.EditarGrupoRequestDto;
 import com.tesoramobil.grupos.dtos.EventoGrupoResponseDto;
+import com.tesoramobil.grupos.dtos.EventoKafkaDto;
 import com.tesoramobil.grupos.dtos.GrupoResumenDto;
 import com.tesoramobil.grupos.dtos.GruposPorRolResponseDto;
 import com.tesoramobil.grupos.dtos.InvitarMiembroRequestDto;
@@ -145,14 +149,31 @@ public class GrupoServicesImpl implements GrupoServices {
 		return null;
 	}
 
+
+	
 	private void notificarConsultaDeGrupos(Long usuarioId) {
-		try {
-			ConsultaGruposUsuarioEvent evento = new ConsultaGruposUsuarioEvent(usuarioId);
-			String json = objectMapper.writeValueAsString(evento);
-			publisher.publicarConsultaGrupos(usuarioId.toString(), json);
-		} catch (Exception e) {
-			// Aquí podrías almacenar en BD, métrica o log de fallback si quieres
-		}
+	    try {
+	        EventoKafkaDto.UsuarioOrigen origen = new EventoKafkaDto.UsuarioOrigen(usuarioId, "Nombre del usuario"); // Si tienes el nombre, inclúyelo
+
+	        Map<String, Object> datos = new HashMap<>();
+	        datos.put("cantidadGrupos", 3); // Ejemplo
+	        datos.put("roles", List.of("ADMINISTRADOR", "TESORERO")); // Opcional
+
+	        EventoKafkaDto evento = new EventoKafkaDto(
+	            "CONSULTA_GRUPOS_USUARIO",
+	            Instant.now().toString(),
+	            origen,
+	            datos,
+	            "El usuario consultó sus grupos"
+	        );
+
+	        String json = objectMapper.writeValueAsString(evento);
+	        publisher.publicarConsultaGrupos(usuarioId.toString(), json);
+
+	    } catch (Exception e) {
+	        // fallback
+	    }
 	}
+
 
 }
